@@ -1,6 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const { joinVoiceChannel, getVoiceConnection } = require('@discordjs/voice');
-const { Track, searchYt, fromUrl } = require('../track.js');
+const { fromYtSearch, fromUrl } = require('../track.js');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -13,14 +13,15 @@ module.exports = {
 			.setRequired(true)),
 
 	async execute(interaction) {
+        let track;
         const term = interaction.options.get('term').value;
 
         // If the term isn't a URL, search YouTube to find one
-        if (!term.includes('http')) url = await searchYt(term);
+        if (!term.includes('http'))
+            track = await fromYtSearch(term);
         // Otherwise use the term as a URL
-        else url = term;
-
-        const track = await fromUrl(url);
+        else
+            track = await fromUrl(term);
 
         try
         {
@@ -48,11 +49,15 @@ module.exports = {
 			    interaction.client.player.play(resource);
             }
 
+            const date = new Date(0);
+            date.setSeconds(track.duration);
+            const duration = date.toISOString().substring(11, 19);
+
             const embed = new EmbedBuilder()
                 .setColor('#dbb785')
                 .setAuthor({ name: 'Added to queue' })
                 .setDescription(track.title)
-                .setFooter({ name: 'Position: ' + interaction.client.queue.length });
+                .setFooter({ text: `Position: ${interaction.client.queue.length} · Duration: ${duration}` });
 
             await interaction.reply({ embeds: [embed] });
         }

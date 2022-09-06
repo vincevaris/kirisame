@@ -3,6 +3,17 @@ const path = require('path');
 const { Client, Collection, GatewayIntentBits } = require('discord.js');
 const { token } = require('./config.json');
 const { createAudioPlayer, AudioPlayerStatus } = require('@discordjs/voice');
+const playdl = require('play-dl')
+
+// Set up play-dl authorizations
+playdl.getFreeClientID().then((clientId) =>
+{
+	playdl.setToken(
+	{
+		soundcloud: { client_id: clientId },
+    });
+});
+
 
 // Create a new client instance
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildVoiceStates] });

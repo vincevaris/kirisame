@@ -1,37 +1,57 @@
-const ytdl = require('ytdl-core');
+const playdl = require('play-dl');
 const { createAudioResource } = require('@discordjs/voice');
-const yts = require('youtube-search-without-api-key');
 
 class Track
 {
-    constructor(url, title)
+    constructor(url, title, duration)
     {
         this.url = url;
         this.title = title;
+        this.duration = duration;
     }
 
     async resource()
     {
-        const stream = ytdl(this.url, { filter: 'audioonly' });
-        console.log(this.url);
-        return createAudioResource(stream);
+        const source = await playdl.stream(this.url);
+        return createAudioResource(source.stream, { inputType: source.type });
     }
 }
 
 const fromUrl = async function(url)
 {
-    const info = await ytdl.getBasicInfo(url);
-    const title = info.videoDetails.title;
-    return new Track(url, title);
+    const type = await playdl.validate(url);
+
+    switch (type)
+    {
+        case 'yt_video':
+        {
+            const info = await playdl.video_basic_info(url);
+            const title = info.title;
+            const duration = info.durationInSec;
+            return new Track(url, title, duration);
+        }
+        case 'so_track':
+        {
+            const info = await playdl.soundcloud(url);
+            const title = info.name;
+            const duration = info.durationInSec;
+            return new Track(url, title, duration);
+        }
+        // TODO: Support Spotify and Deezer transitions into YouTube searches.
+    }
+
+    
 }
 
-const searchYt = async function(term)
+const fromYtSearch = async function(term)
 {
-    const data = await yts.search(term);
+    const results = await playdl.search(term, { limit: 1 });
 
-    const videoId = data[0].id.videoId;
+    const url = results[0].url;
+    const title = results[0].title;
+    const duration = results[0].durationInSec;
 
-    return `http://www.youtube.com/watch?v=${videoId}`;
+    return new Track(url, title, duration);
 }
 
-module.exports = { Track, fromUrl, searchYt };
+module.exports = { Track, fromUrl, fromYtSearch };
