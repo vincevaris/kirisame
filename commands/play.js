@@ -50,8 +50,9 @@ module.exports = {
 
             const embed = new EmbedBuilder()
                 .setColor('#dbb785')
-                .setAuthor({ name: 'Added to queue', iconURL: null, url: null })
-                .setDescription(track.title);
+                .setAuthor({ name: 'Added to queue' })
+                .setDescription(track.title)
+                .setFooter({ name: 'Position: ' + interaction.client.queue.length });
 
             await interaction.reply({ embeds: [embed] });
         }
