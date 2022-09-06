@@ -26,8 +26,8 @@ const fromUrl = async function(url)
         case 'yt_video':
         {
             const info = await playdl.video_basic_info(url);
-            const title = info.title;
-            const duration = info.durationInSec;
+            const title = info.video_details.title;
+            const duration = info.video_details.durationInSec;
             return new Track(url, title, duration);
         }
         case 'so_track':
