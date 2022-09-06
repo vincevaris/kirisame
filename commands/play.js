@@ -2,6 +2,15 @@ const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const { joinVoiceChannel, getVoiceConnection } = require('@discordjs/voice');
 const { fromYtSearch, fromUrl } = require('../track.js');
 
+function hhmmss(seconds)
+{
+    const format = val => `0${Math.floor(val)}`.slice(-2)
+    const hours = seconds / 3600
+    const minutes = (seconds % 3600) / 60
+  
+    return [hours, minutes, seconds % 60].map(format).join(':')
+}
+
 module.exports = {
 	data: new SlashCommandBuilder()
         .setName('play')
@@ -49,15 +58,11 @@ module.exports = {
 			    interaction.client.player.play(resource);
             }
 
-            const date = new Date(0);
-            date.setSeconds(track.duration);
-            const duration = date.toISOString().substring(11, 19);
-
             const embed = new EmbedBuilder()
                 .setColor('#dbb785')
                 .setAuthor({ name: 'Added to queue' })
                 .setDescription(track.title)
-                .setFooter({ text: `Position: ${interaction.client.queue.length} · Duration: ${duration}` });
+                .setFooter({ text: `Position: ${interaction.client.queue.length} · Duration: ${hhmmss(track.duration)}` });
 
             await interaction.reply({ embeds: [embed] });
         }
