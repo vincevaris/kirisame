@@ -63,10 +63,8 @@ client.on('ready', async () => {
 	client.console.log(`${client.user.tag} - ready in ${client.guilds.size} guilds with ${client.users.size} users.`);	
 });
 
-client.on('disconnect', () => client.console.warn('Client is disconnecting...'))
-	.on('reconnecting', () => client.console.log('Client is reconnecting...'))
-	.on('error', err => client.console.error(err))
-	.on('warn', info => client.console.warn(info));
+client.on('disconnect', () => client.console.log('Client is disconnecting...'))
+	.on('reconnecting', () => client.console.log('Client is reconnecting...'));
 
 client.on('interactionCreate', async interaction =>
 {
