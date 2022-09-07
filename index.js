@@ -60,11 +60,11 @@ client.login(process.env.DISCORD_TOKEN);
 client.on('ready', async () => {
 	client.user.setActivity({ name: 'Gensokyo Radio', type: ActivityType.Listening });
 
-	client.console.log(`${client.user.tag} - ready in ${client.guilds.size} guilds with ${client.users.size} users.`);	
+	console.log(`${client.user.tag} - ready in ${client.guilds.cache.size} guilds with ${client.users.cache.size} users.`);	
 });
 
-client.on('disconnect', () => client.console.log('Client is disconnecting...'))
-	.on('reconnecting', () => client.console.log('Client is reconnecting...'));
+client.on('disconnect', () => console.log('Client is disconnecting...'))
+	.on('reconnecting', () => console.log('Client is reconnecting...'));
 
 client.on('interactionCreate', async interaction =>
 {
