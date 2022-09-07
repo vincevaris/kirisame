@@ -37,7 +37,14 @@ const fromUrl = async function(url)
             const duration = info.durationInSec;
             return new Track(url, title, duration);
         }
-        // TODO: Support Spotify and Deezer transitions into YouTube searches.
+        case 'sp_track':
+        {
+            const info = await playdl.spotify(url);
+            const title = info.name;
+            const artist = info.artists[0].name;
+            return fromYtSearch(`${artist} ${title}`);
+        }
+        // TODO: Support Deezer transitions into YouTube searches.
     }
 
     
