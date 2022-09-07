@@ -10,7 +10,17 @@ playdl.getFreeClientID().then((clientId) =>
 {
 	playdl.setToken(
 	{
-		soundcloud: { client_id: clientId },
+		soundcloud:
+		{
+			client_id: clientId,
+		},
+		spotify:
+		{
+			client_id: process.env.SPOTIFY_CLIENT_ID,
+        	client_secret: process.env.SPOTIFY_CLIENT_SECRET,
+        	refresh_token: process.env.SPOTIFY_REFRESH_TOKEN,
+        	market: process.env.SPOTIFY_MARKET,
+		}
     });
 });
 
