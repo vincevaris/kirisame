@@ -39,6 +39,9 @@ const fromUrl = async function(url)
         }
         case 'sp_track':
         {
+            if (playdl.is_expired())
+                await play.refreshToken();
+
             const info = await playdl.spotify(url);
             const title = info.name;
             const artist = info.artists[0].name;
