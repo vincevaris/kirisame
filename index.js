@@ -1,7 +1,6 @@
 const fs = require('fs');
 const path = require('path');
 const { Client, Collection, GatewayIntentBits } = require('discord.js');
-const { token } = require('./config.json');
 const { createAudioPlayer, AudioPlayerStatus } = require('@discordjs/voice');
 const playdl = require('play-dl')
 
@@ -68,7 +67,4 @@ client.on('interactionCreate', async interaction =>
 });
 
 // Login to Discord with your client's token
-client.login(token);
-
-
-
+client.login(process.env.TOKEN);
