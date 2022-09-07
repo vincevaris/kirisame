@@ -1,3 +1,4 @@
+require('dotenv').config()
 const fs = require('fs');
 const path = require('path');
 const { Client, Collection, GatewayIntentBits } = require('discord.js');
@@ -67,4 +68,4 @@ client.on('interactionCreate', async interaction =>
 });
 
 // Login to Discord with your client's token
-client.login(process.env.TOKEN);
+client.login(process.env.DISCORD_TOKEN);
