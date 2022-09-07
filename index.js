@@ -1,7 +1,7 @@
-require('dotenv').config()
+require('dotenv').config();
 const fs = require('fs');
 const path = require('path');
-const { Client, Collection, GatewayIntentBits } = require('discord.js');
+const { Client, Collection, GatewayIntentBits, ActivityType } = require('discord.js');
 const { createAudioPlayer, AudioPlayerStatus } = require('@discordjs/voice');
 const playdl = require('play-dl')
 
@@ -55,12 +55,19 @@ client.player.on(AudioPlayerStatus.Idle, async (oldState, newState) => {
 	}
 });
 
-// When the client is ready, run this code (only once)
-client.once('ready', async () => {
-	console.log('Ready!');	
+client.login(process.env.DISCORD_TOKEN);
+
+client.on('ready', async () => {
+	client.user.setActivity({ name: 'Gensokyo Radio', type: ActivityType.Listening });
+
+	client.console.log(`${client.user.tag} - ready in ${client.guilds.size} guilds with ${client.users.size} users.`);	
 });
 
-// Respond to commands
+client.on('disconnect', () => client.console.warn('Client is disconnecting...'))
+	.on('reconnecting', () => client.console.log('Client is reconnecting...'))
+	.on('error', err => client.console.error(err))
+	.on('warn', info => client.console.warn(info));
+
 client.on('interactionCreate', async interaction =>
 {
 	if (!interaction.isChatInputCommand()) return;
@@ -76,6 +83,3 @@ client.on('interactionCreate', async interaction =>
 		await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
 	}
 });
-
-// Login to Discord with your client's token
-client.login(process.env.DISCORD_TOKEN);
