@@ -1,6 +1,7 @@
-
-report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json 
 node_modules/
 *.env
 .data/
 .vscode/
+config/
+Procfile
+package-lock.json
