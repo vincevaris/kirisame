@@ -1,4 +1,4 @@
-require('dotenv').config();
+const config = require('./config/config.json')
 const fs = require('fs');
 const path = require('path');
 const { Client, Collection, GatewayIntentBits, ActivityType } = require('discord.js');
@@ -16,10 +16,10 @@ playdl.getFreeClientID().then((clientId) =>
 		},
 		spotify:
 		{
-			client_id: process.env.SPOTIFY_CLIENT_ID,
-        	client_secret: process.env.SPOTIFY_CLIENT_SECRET,
-        	refresh_token: process.env.SPOTIFY_REFRESH_TOKEN,
-        	market: process.env.SPOTIFY_MARKET,
+			client_id: config.spotify.clientId,
+        	client_secret: config.spotify.clientSecret,
+        	refresh_token: config.spotify.refreshToken,
+        	market: config.spotify.market,
 		}
     });
 });
@@ -55,7 +55,7 @@ client.player.on(AudioPlayerStatus.Idle, async (oldState, newState) => {
 	}
 });
 
-client.login(process.env.DISCORD_TOKEN);
+client.login(config.discord.token);
 
 client.on('ready', async () => {
 	client.user.setActivity({ name: 'Gensokyo Radio', type: ActivityType.Listening });
