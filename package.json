@@ -15,5 +15,8 @@
     "discord.js": "^14.3.0",
     "play-dl": "^1.9.5",
     "sodium": "^3.0.2"
+  },
+  "devDependencies": {
+    "eslint": "^8.23.0"
   }
 }

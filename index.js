@@ -1,29 +1,28 @@
-const config = require('./config/config.json')
+const config = require('./config/config.json');
 const fs = require('fs');
 const path = require('path');
 const { Client, Collection, GatewayIntentBits, ActivityType } = require('discord.js');
 const { createAudioPlayer, AudioPlayerStatus } = require('@discordjs/voice');
-const playdl = require('play-dl')
+const playdl = require('play-dl');
 
 // Set up play-dl authorizations
 playdl.getFreeClientID().then((clientId) =>
 {
 	playdl.setToken(
-	{
-		soundcloud:
+		{
+			soundcloud:
 		{
 			client_id: clientId,
 		},
-		spotify:
+			spotify:
 		{
 			client_id: config.spotify.clientId,
-        	client_secret: config.spotify.clientSecret,
-        	refresh_token: config.spotify.refreshToken,
-        	market: config.spotify.market,
-		}
-    });
+			client_secret: config.spotify.clientSecret,
+			refresh_token: config.spotify.refreshToken,
+			market: config.spotify.market,
+		},
+		});
 });
-
 
 // Create a new client instance
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildVoiceStates] });
@@ -42,8 +41,10 @@ for (const file of commandFiles)
 	client.commands.set(command.data.name, command);
 }
 
-client.player.on(AudioPlayerStatus.Idle, async (oldState, newState) => {
-	if (oldState.status !== AudioPlayerStatus.Idle) {
+client.player.on(AudioPlayerStatus.Idle, async (oldState) =>
+{
+	if (oldState.status !== AudioPlayerStatus.Idle)
+	{
 		client.queue.shift();
 
 		if (client.queue[0])
@@ -57,10 +58,11 @@ client.player.on(AudioPlayerStatus.Idle, async (oldState, newState) => {
 
 client.login(config.discord.token);
 
-client.on('ready', async () => {
+client.on('ready', async () =>
+{
 	client.user.setActivity({ name: 'Gensokyo Radio', type: ActivityType.Listening });
 
-	console.log(`${client.user.tag} - ready in ${client.guilds.cache.size} guilds with ${client.users.cache.size} users.`);	
+	console.log(`${client.user.tag} - ready in ${client.guilds.cache.size} guilds with ${client.users.cache.size} users.`);
 });
 
 client.on('disconnect', () => console.log('Client is disconnecting...'))
@@ -74,9 +76,12 @@ client.on('interactionCreate', async interaction =>
 
 	if (!command) return;
 
-	try {
+	try
+	{
 		await command.execute(interaction);
-	} catch (error) {
+	}
+	catch (error)
+	{
 		console.error(error);
 		await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
 	}
