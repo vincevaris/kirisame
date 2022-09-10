@@ -3,14 +3,15 @@ const { createAudioResource } = require('@discordjs/voice');
 
 class Track
 {
-	constructor(url, title, duration)
+	constructor(url, title, artist, duration)
 	{
 		this.url = url;
 		this.title = title;
+		this.artist = artist;
 		this.duration = duration;
 	}
 
-	async resource()
+	async createResource()
 	{
 		const source = await playdl.stream(this.url);
 		return createAudioResource(source.stream, { inputType: source.type });
@@ -27,15 +28,17 @@ const fromUrl = async function(url)
 	{
 		const info = await playdl.video_basic_info(url);
 		const title = info.video_details.title;
+		const artist = info.video_details.channel.name;
 		const duration = info.video_details.durationInSec;
-		return new Track(url, title, duration);
+		return new Track(url, title, artist, duration);
 	}
 	case 'so_track':
 	{
 		const info = await playdl.soundcloud(url);
 		const title = info.name;
+		const artist = info.user.name;
 		const duration = info.durationInSec;
-		return new Track(url, title, duration);
+		return new Track(url, title, artist, duration);
 	}
 	case 'sp_track':
 	{
@@ -57,9 +60,10 @@ const fromYtSearch = async function(term)
 
 	const url = results[0].url;
 	const title = results[0].title;
+	const artist = results[0].channel.name;
 	const duration = results[0].durationInSec;
 
-	return new Track(url, title, duration);
+	return new Track(url, title, artist, duration);
 };
 
 module.exports = { Track, fromUrl, fromYtSearch };

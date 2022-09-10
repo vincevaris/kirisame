@@ -1,15 +1,8 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const { joinVoiceChannel, getVoiceConnection } = require('@discordjs/voice');
+const { joinVoiceChannel, entersState, VoiceConnectionStatus } = require('@discordjs/voice');
+const { MusicSubscription } = require('../MusicSubscription.js');
 const { fromYtSearch, fromUrl } = require('../track.js');
-
-function hhmmss(seconds)
-{
-	const format = val => `0${Math.floor(val)}`.slice(-2);
-	const hours = seconds / 3600;
-	const minutes = (seconds % 3600) / 60;
-
-	return [hours, minutes, seconds % 60].map(format).join(':');
-}
+const { hhmmss } = require('../utils.js');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -23,54 +16,67 @@ module.exports = {
 
 	async execute(interaction)
 	{
-		let track;
-		const term = interaction.options.get('term').value;
+		const client = interaction.client;
+		let subscription = client.subscriptions.get(interaction.guildId);
 
-		// If the term isn't a URL, search YouTube to find one
-		if (!term.includes('http'))
-			track = await fromYtSearch(term);
-		// Otherwise use the term as a URL
-		else
-			track = await fromUrl(term);
+		// If there's no subscription, or the subscription is in the wrong channel, create a new one
+		if (!subscription || subscription.connection.joinConfig.channelId != interaction.member.voice.channelId)
+		{
+			const vc = interaction.member.voice.channel;
+
+			if (!vc.permissionsFor(client.user).has('Connect'))
+				return interaction.reply({ content: 'I don\'t have permission to join that voice channel.', ephemeral: true });
+
+			subscription = new MusicSubscription(
+				joinVoiceChannel({
+					channelId: vc.id,
+					guildId: vc.guild.id,
+					adapterCreator: vc.guild.voiceAdapterCreator,
+				}),
+			);
+			subscription.connection.on('error', console.warn);
+			client.subscriptions.set(vc.guildId, subscription);
+		}
+
+		if (!subscription)
+			return interaction.reply({ content: 'You have to join a voice channel to start a listening party.', ephemeral: true });
 
 		try
 		{
-			const player = interaction.client.player;
-			const sender = interaction.member;
-			const senderVc = sender.voice.channel;
+			await entersState(subscription.connection, VoiceConnectionStatus.Ready, 20e3);
+		}
+		catch (err)
+		{
+			console.warn(err);
+			return interaction.reply({ content: 'I couldn\'t join that voice channel for some reason.', ephemeral: true });
+		}
 
-			let connection = getVoiceConnection(interaction.guildId);
+		try
+		{
+			let track;
+			const term = interaction.options.get('term').value;
 
-			if (!connection || connection.joinConfig.channelId != senderVc.id)
-			{
-				connection = joinVoiceChannel({
-					channelId: senderVc.id,
-					guildId: senderVc.guildId,
-					adapterCreator: senderVc.guild.voiceAdapterCreator,
-				});
-				connection.subscribe(player);
-			}
+			// If the term isn't a URL, search YouTube to find one
+			if (!term.includes('http'))
+				track = await fromYtSearch(term);
+			// Otherwise use the term as a URL
+			else
+				track = await fromUrl(term);
 
-			interaction.client.queue.push(track);
-
-			if (interaction.client.queue[0] === track)
-			{
-				const resource = await track.resource();
-				interaction.client.player.play(resource);
-			}
+			subscription.enqueue(track);
 
 			const embed = new EmbedBuilder()
-				.setColor('#dbb785')
-				.setAuthor({ name: 'Added to queue' })
+				.setColor('#77b255')
+				.setAuthor({ name: 'Added to Queue' })
 				.setDescription(track.title)
-				.setFooter({ text: `Position: ${interaction.client.queue.length} · Duration: ${hhmmss(track.duration)}` });
+				.setFooter({ text: `Artist: ${track.artist} · Duration: ${hhmmss(track.duration)} · Position: ${subscription.queue.length}` });
 
-			await interaction.reply({ embeds: [embed] });
+			return interaction.reply({ embeds: [embed] });
 		}
-		catch (error)
+		catch (err)
 		{
-			console.warn(error);
-			await interaction.reply('Failed to play track, please try again later!');
+			console.warn(err);
+			return interaction.reply({ content: 'I can\'t play that track for some reason.', ephemeral: true });
 		}
 	},
 };
