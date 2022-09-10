@@ -1,7 +1,7 @@
 const config = require('./config/config.json');
 const fs = require('fs');
 const path = require('path');
-const { Client, Collection, GatewayIntentBits, ActivityType } = require('discord.js');
+const { Client, Collection, GatewayIntentBits } = require('discord.js');
 const { createAudioPlayer, AudioPlayerStatus } = require('@discordjs/voice');
 const playdl = require('play-dl');
 
@@ -41,6 +41,16 @@ for (const file of commandFiles)
 	client.commands.set(command.data.name, command);
 }
 
+const eventsPath = path.join(__dirname, 'events');
+const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js'));
+
+for (const file of eventFiles)
+{
+	const filePath = path.join(eventsPath, file);
+	const event = require(filePath);
+	client.on(event.name, (...args) => event.execute(...args));
+}
+
 client.player.on(AudioPlayerStatus.Idle, async (oldState) =>
 {
 	if (oldState.status !== AudioPlayerStatus.Idle)
@@ -58,31 +68,5 @@ client.player.on(AudioPlayerStatus.Idle, async (oldState) =>
 
 client.login(config.discord.token);
 
-client.on('ready', async () =>
-{
-	client.user.setActivity({ name: 'Gensokyo Radio', type: ActivityType.Listening });
-
-	console.log(`${client.user.tag} - ready in ${client.guilds.cache.size} guilds with ${client.users.cache.size} users.`);
-});
-
 client.on('disconnect', () => console.log('Client is disconnecting...'))
 	.on('reconnecting', () => console.log('Client is reconnecting...'));
-
-client.on('interactionCreate', async interaction =>
-{
-	if (!interaction.isChatInputCommand()) return;
-
-	const command = interaction.client.commands.get(interaction.commandName);
-
-	if (!command) return;
-
-	try
-	{
-		await command.execute(interaction);
-	}
-	catch (error)
-	{
-		console.error(error);
-		await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
-	}
-});
