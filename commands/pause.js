@@ -28,14 +28,14 @@ module.exports = {
 			subscription.player.pause();
 			embed
 				.setColor('#ffcc4d')
-				.setAuthor({ name: 'Paused' });
+				.setAuthor({ name: 'Paused Track' });
 		}
 		else
 		{
 			subscription.player.unpause();
 			embed
 				.setColor('#77b255')
-				.setAuthor({ name: 'Unpaused' });
+				.setAuthor({ name: 'Unpaused Track' });
 		}
 
 		return interaction.reply({ embeds: [embed] });

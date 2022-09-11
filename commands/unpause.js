@@ -26,7 +26,7 @@ module.exports = {
 		const track = subscription.queue[0];
 		const embed = new EmbedBuilder()
 			.setColor('#77b255')
-			.setAuthor({ name: 'Resumed' })
+			.setAuthor({ name: 'Resumed Track' })
 			.setDescription(track.title)
 			.setFooter({ text: `Artist: ${track.artist} · Duration: ${hhmmss(track.duration)}` });
 

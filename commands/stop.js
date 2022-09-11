@@ -18,7 +18,7 @@ module.exports = {
 
 		const embed = new EmbedBuilder()
 			.setColor('#dd2e46')
-			.setAuthor({ name: 'Listening Party Stopped' })
+			.setAuthor({ name: 'Stopped Listening Party' })
 			.setDescription(`${subscription.totalTracks} track(s) were queued. Thanks for listening!`);
 
 		return interaction.reply({ embeds: [embed] });
