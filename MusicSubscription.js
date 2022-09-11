@@ -68,6 +68,7 @@ class MusicSubscription
 		{
 			if (newState.status === AudioPlayerStatus.Idle && oldState.status !== AudioPlayerStatus.Idle)
 			{
+				this.lastIdleDate = new Date();
 				this.queue.shift();
 				this.processQueue();
 			}
@@ -88,6 +89,11 @@ class MusicSubscription
 		this.queueLock = true;
 		this.queue = [];
 		this.player.stop(true);
+	}
+
+	isExpired()
+	{
+		return (this.lastIdleDate && new Date() > new Date(this.lastIdleDate.getTime() + 60_000));
 	}
 
 	async processQueue()
