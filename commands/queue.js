@@ -13,10 +13,8 @@ module.exports = {
 		if (!subscription)
 			return interaction.reply({ content: 'There\'s no listening party happening right now.', ephemeral: true });
 
-		const queue = subscription.queue;
-
-		if (queue.length === 0)
-			return interaction.reply('The queue is currently empty.');
+		if (subscription.queue.length === 0)
+			return interaction.reply({ content: 'The queue is currently empty.', ephemeral: true });
 
 		const output = subscription.queue
 			.slice(0, 5)

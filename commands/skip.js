@@ -17,7 +17,7 @@ module.exports = {
 		const queue = subscription.queue;
 
 		if (queue.length === 0)
-			return interaction.reply('The queue is currently empty.');
+			return interaction.reply({ content: 'There\'s nothing playing right now.', ephemeral: true });
 
 		subscription.player.stop();
 

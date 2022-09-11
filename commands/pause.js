@@ -15,6 +15,9 @@ module.exports = {
 		if (!subscription)
 			return interaction.reply({ content: 'There\'s no listening party happening right now.', ephemeral: true });
 
+		if (subscription.queue.length === 0)
+			return interaction.reply({ content: 'There\'s nothing playing right now.', ephemeral: true });
+
 		const track = subscription.queue[0];
 		const embed = new EmbedBuilder()
 			.setDescription(track.title)

@@ -15,7 +15,10 @@ module.exports = {
 		if (!subscription)
 			return interaction.reply({ content: 'There\'s no listening party happening right now.', ephemeral: true });
 
-		if (subscription.player.state.status === AudioPlayerStatus.Paused)
+		if (subscription.queue.length === 0)
+			return interaction.reply({ content: 'There\'s nothing playing right now.', ephemeral: true });
+
+		if (subscription.player.state.status !== AudioPlayerStatus.Paused)
 			return interaction.reply({ content: 'The current track is already unpaused.' });
 
 		subscription.player.unpause();
