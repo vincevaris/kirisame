@@ -12,7 +12,6 @@ module.exports = {
 		{
 			for (const [id, subscription] of client.subscriptions) if (subscription.isExpired())
 			{
-				console.log('this subscription is expired, bye bye!');
 				subscription.connection.destroy();
 				client.subscriptions.delete(id);
 			}
