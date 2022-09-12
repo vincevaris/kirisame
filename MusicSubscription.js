@@ -68,7 +68,7 @@ class MusicSubscription
 		{
 			if (newState.status === AudioPlayerStatus.Idle && oldState.status !== AudioPlayerStatus.Idle)
 			{
-				this.lastIdleDate = new Date();
+				this.lastChangeDate = new Date();
 				this.queue.shift();
 				this.processQueue();
 			}
@@ -93,7 +93,7 @@ class MusicSubscription
 
 	isExpired()
 	{
-		return (this.lastIdleDate && new Date() > new Date(this.lastIdleDate.getTime() + 3 * 60_000));
+		return (this.lastChangeDate && new Date() > new Date(this.lastChangeDate.getTime() + 3 * 60_000));
 	}
 
 	async processQueue()
@@ -108,6 +108,7 @@ class MusicSubscription
 		{
 			const resource = await track.createResource();
 			this.player.play(resource);
+			this.lastChangeDate = new Date();
 			this.queueLock = false;
 		}
 		catch (err)
