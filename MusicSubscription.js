@@ -93,7 +93,7 @@ class MusicSubscription
 
 	isExpired()
 	{
-		return (this.lastIdleDate && new Date() > new Date(this.lastIdleDate.getTime() + 60_000));
+		return (this.lastIdleDate && new Date() > new Date(this.lastIdleDate.getTime() + 3 * 60_000));
 	}
 
 	async processQueue()
