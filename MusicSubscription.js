@@ -96,7 +96,7 @@ class MusicSubscription
 		// Player isn't playing anything
 		return this.lastChangeDate &&
 			// Last change date is set
-			this.player.state !== AudioPlayerStatus.Playing &&
+			this.player.state.status !== AudioPlayerStatus.Playing &&
 			// Last change date was over 3 minutes ago
 			new Date() > new Date(this.lastChangeDate.getTime() + 3 * 60_000);
 	}
