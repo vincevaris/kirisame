@@ -93,7 +93,12 @@ class MusicSubscription
 
 	isExpired()
 	{
-		return (this.lastChangeDate && new Date() > new Date(this.lastChangeDate.getTime() + 3 * 60_000));
+		// Player isn't playing anything
+		return this.lastChangeDate &&
+			// Last change date is set
+			this.player.state !== AudioPlayerStatus.Playing &&
+			// Last change date was over 3 minutes ago
+			new Date() > new Date(this.lastChangeDate.getTime() + 3 * 60_000);
 	}
 
 	async processQueue()
